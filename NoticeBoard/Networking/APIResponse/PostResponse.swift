@@ -38,3 +38,10 @@ struct PostListResponse: Codable, Equatable {
     let limit: Int
     let total: Int
 }
+
+extension Post: Hashable {
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(postId)
+    }
+}

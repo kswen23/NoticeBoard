@@ -16,6 +16,7 @@ struct BoardListResponse: Codable, Equatable {
 }
 
 struct Board: Codable, Equatable {
+    
     let boardId: Int
     let displayName: String
     let boardType: String
@@ -26,6 +27,7 @@ struct Board: Codable, Equatable {
 }
 
 struct Capability: Codable, Equatable {
+    
     let writable: Bool
     let manageable: Bool
 }
