@@ -16,7 +16,6 @@ class NoticeBoardViewController: UIViewController {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "일반 게시판"
         label.font = UIFont.systemFont(ofSize: 25, weight: .semibold)
         label.sizeToFit()
         return label
@@ -36,6 +35,30 @@ class NoticeBoardViewController: UIViewController {
     
     private let postTableView: UITableView = UITableView()
     private var postTableViewDataSource: UITableViewDiffableDataSource<Int, Post>?
+    
+    private let emptyImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "empty.png")
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+    
+    private let emptyLabel: UILabel = {
+        let label = UILabel()
+        label.text = "등록된 게시글이 없습니다."
+        label.sizeToFit()
+        label.textColor = .systemGray
+        label.font = .systemFont(ofSize: 14)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private let emptyStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.isHidden = true
+        return stackView
+    }()
     
     // MARK: - Initialize
     private var viewModel: NoticeBoardViewModelProtocol
@@ -61,6 +84,7 @@ class NoticeBoardViewController: UIViewController {
     // MARK: - Layout
     private func layout() {
         layoutPostTableView()
+        layoutEmptyStackView()
     }
     
     private func layoutPostTableView() {
@@ -71,6 +95,19 @@ class NoticeBoardViewController: UIViewController {
             postTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             postTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             postTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
+    
+    private func layoutEmptyStackView() {
+        configureEmptyStackView()
+        
+        view.addSubview(emptyStackView)
+        emptyStackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            emptyStackView.centerXAnchor.constraint(equalTo: postTableView.centerXAnchor),
+            emptyStackView.centerYAnchor.constraint(equalTo: postTableView.centerYAnchor, constant: -50),
+            emptyStackView.heightAnchor.constraint(equalToConstant: 300),
+            emptyStackView.widthAnchor.constraint(equalToConstant: 200),
         ])
     }
     
@@ -92,16 +129,26 @@ class NoticeBoardViewController: UIViewController {
     
     private func bindPostRelay() {
         viewModel.postRelay
-            .subscribe { [weak self] postList in
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] postList in
                 
                 guard let strongSelf = self,
                       let postList = postList else { return }
                 
+                if postList.isEmpty {
+                    strongSelf.emptyStackView.isHidden = false
+                } else {
+                    strongSelf.emptyStackView.isHidden = true
+                }
+                
                 var snapshot = NSDiffableDataSourceSnapshot<Int, Post>()
                 snapshot.appendSections([0])
-                snapshot.appendItems(postList)
-                strongSelf.postTableViewDataSource?.apply(snapshot, animatingDifferences: false)
-            }.disposed(by: disposeBag)
+                snapshot.appendItems(postList, toSection: 0)
+                strongSelf.postTableViewDataSource?.apply(snapshot, animatingDifferences: false, completion: { [weak self] in
+                    self?.viewModel.postListDidUpdated(with: postList)
+                })
+                
+            }).disposed(by: disposeBag)
     }
     
     // MARK: - Configure
@@ -125,6 +172,13 @@ class NoticeBoardViewController: UIViewController {
         postTableView.dataSource = postTableViewDataSource
     }
     
+    private func configureEmptyStackView() {
+        [emptyImageView, emptyLabel].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            emptyStackView.addArrangedSubview($0)
+        }
+    }
+    
     private func configureTitleLabel(title: String) {
         titleLabel.text = title
         titleLabel.sizeToFit()
@@ -132,7 +186,7 @@ class NoticeBoardViewController: UIViewController {
     
     private func presentMenuSelectViewController() {
         guard let boardList = viewModel.boardList else { return }
-            
+        
         let menuSelectViewController = DependencyInjector.shared.makeMenuSelectViewController(boardList: boardList, parentableViewController: self)
         present(UINavigationController(rootViewController: menuSelectViewController), animated: true)
     }
@@ -151,6 +205,13 @@ extension NoticeBoardViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         66
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        let scrollViewHeight = scrollView.contentSize.height - scrollView.frame.height
+        if scrollViewHeight - scrollView.contentOffset.y <= 0 {
+            viewModel.fetchNextPostList()
+        }
     }
     
     private func makePostTableViewDataSource() -> UITableViewDiffableDataSource<Int, Post> {

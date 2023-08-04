@@ -20,14 +20,18 @@ protocol NoticeBoardViewModelProtocol {
     func viewDidLoad()
     func changeBoard(to indexPath: IndexPath)
     func fetchPostList(for board: Board)
+    func fetchNextPostList()
+    func postListDidUpdated(with postList: [Post])
 }
 
 final class NoticeBoardViewModel: NoticeBoardViewModelProtocol {
     
-    var boardList: [Board]?
-    
     let boardRelay: BehaviorRelay<Board?> = .init(value: nil)
     let postRelay: BehaviorRelay<[Post]?> = .init(value: nil)
+    var boardList: [Board]?
+    private var currentOffset = 0
+    private var hasNextPage: Bool?
+    private var isFetchable: Bool?
     
     // MARK: - Initialize
     private let noticeBoardAPIFetcher: NoticeBoardAPIFetcherProtocol
@@ -54,15 +58,47 @@ final class NoticeBoardViewModel: NoticeBoardViewModelProtocol {
     
     func changeBoard(to indexPath: IndexPath) {
         guard let boardList = boardList else { return }
+        resetPagingInstance()
         boardRelay.accept(boardList[indexPath.row])
+    }
+    
+    private func resetPagingInstance() {
+        currentOffset = 0
+        isFetchable = nil
+        hasNextPage = nil
     }
     
     func fetchPostList(for board: Board) {
         Task {
-            let postList = await noticeBoardAPIFetcher.fetchPostList(boardID: board.boardId, offset: 0, limit: 30)
+            let postList = await noticeBoardAPIFetcher.fetchPostList(boardID: board.boardId, offset: currentOffset, limit: 30)
             
             postRelay.accept(postList)
         }
     }
+    
+    func fetchNextPostList() {
+        guard let hasNextPage = hasNextPage,
+              let isFetchable = isFetchable else { return }
+        
+        if isFetchable == true, hasNextPage == true {
+            
+            self.isFetchable = false
+            currentOffset += 30
+            
+            Task {
+                guard let board = boardRelay.value,
+                      let postList = postRelay.value else { return }
 
+                let fetchedPostList = await noticeBoardAPIFetcher.fetchPostList(boardID: board.boardId, offset: currentOffset, limit: 30)
+                let post = postList + fetchedPostList
+                postRelay.accept(post)
+            }
+        }
+        
+    }
+
+    func postListDidUpdated(with postList: [Post]) {
+        hasNextPage = postList.count == 30
+        isFetchable = true
+    }
 }
