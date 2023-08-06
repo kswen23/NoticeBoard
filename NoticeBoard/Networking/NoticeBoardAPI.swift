@@ -22,15 +22,27 @@ enum NoticeBoardAPI {
                     searchTarget: SearchTarget.RawValue,
                     offset: Int,
                     limit: Int)
+}
+
+enum SearchTarget: String, CaseIterable {
     
-    enum SearchTarget: String {
-        
-        case all = "all"
-        case title = "title"
-        case contents = "contents"
-        case writer = "writer"
+    case all = "all"
+    case title = "title"
+    case contents = "contents"
+    case writer = "writer"
+    
+    var title: String {
+        switch self {
+        case .all:
+            return "전체 : "
+        case .title:
+            return "제목 : "
+        case .contents:
+            return "내용 : "
+        case .writer:
+            return "작성자 : "
+        }
     }
-    
 }
 
 extension NoticeBoardAPI: TargetType {

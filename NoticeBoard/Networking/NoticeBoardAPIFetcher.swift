@@ -15,6 +15,11 @@ protocol NoticeBoardAPIFetcherProtocol {
     func fetchPostList(boardID: Int,
                        offset: Int,
                        limit: Int) async -> [Post]
+    func fetchSearchPostList(search: String,
+                             searchTarget: SearchTarget,
+                             boardID: Int,
+                             offset: Int,
+                             limit: Int) async -> [Post]
 }
 
 final class NoticeBoardAPIFetcher: NoticeBoardAPIFetcherProtocol {
@@ -44,6 +49,43 @@ final class NoticeBoardAPIFetcher: NoticeBoardAPIFetcherProtocol {
             provider.request(.postList(boardID: boardID,
                                        offset: offset,
                                        limit: limit)) { result in
+                switch result {
+                    
+                case .success(let response):
+                    guard let data = try? response.map(PostListResponse.self) else { return }
+                    
+                    let result = data.value.sorted { (post1, post2) -> Bool in
+                        if post1.postType == "notice" && post2.postType != "notice" {
+                            return true
+                        } else if post1.postType != "notice" && post2.postType == "notice" {
+                            return false
+                        } else {
+                            let date1 = Date.createdDateTimeToDate(post1.createdDateTime)
+                            let date2 = Date.createdDateTimeToDate(post2.createdDateTime)
+                            return date1 > date2
+                        }
+                    }
+                    
+                    continuation.resume(returning: result)
+                    
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func fetchSearchPostList(search: String,
+                             searchTarget: SearchTarget,
+                             boardID: Int,
+                             offset: Int,
+                             limit: Int) async -> [Post] {
+        return await withCheckedContinuation { continuation in
+            provider.request(.searchPost(boardID: boardID,
+                                         search: search,
+                                         searchTarget: searchTarget.rawValue,
+                                         offset: offset,
+                                         limit: limit)) { result in
                 switch result {
                     
                 case .success(let response):
