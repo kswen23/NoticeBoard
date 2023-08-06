@@ -241,6 +241,8 @@ final class SearchViewController: UIViewController {
                 
                 strongSelf.emptyResultStackView.isHidden = true
                 strongSelf.emptyHistoryStackView.isHidden = true
+                strongSelf.viewModel.resetPagingInstance()
+                
                 strongSelf.searchingDataSource = self?.makeSearchingTableViewDataSource(searchingText)
                 var snapshot = NSDiffableDataSourceSnapshot<Int, SearchTarget>()
                 snapshot.appendSections([0])
@@ -272,7 +274,9 @@ final class SearchViewController: UIViewController {
                 var snapshot = NSDiffableDataSourceSnapshot<Int, Post>()
                 snapshot.appendSections([0])
                 snapshot.appendItems(postList, toSection: 0)
-                strongSelf.searchResultTableViewDataSource?.apply(snapshot, animatingDifferences: false)
+                strongSelf.searchResultTableViewDataSource?.apply(snapshot, animatingDifferences: false, completion: { [weak self] in
+                    self?.viewModel.postListDidUpdated(with: postList)
+                })
                 
                 
             }).disposed(by: disposeBag)
@@ -323,6 +327,15 @@ extension SearchViewController: UITableViewDelegate {
         }
     }
     
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if viewModel.currentSearchState == .searchResult {
+            let scrollViewHeight = scrollView.contentSize.height - scrollView.frame.height
+            if scrollViewHeight - scrollView.contentOffset.y <= 0 {
+                viewModel.fetchNextPostList()
+            }
+        }
+    }
+    
     private func makeSearchHistoryTableViewDataSource() -> UITableViewDiffableDataSource<Int, SearchHistoryModel> {
         return UITableViewDiffableDataSource(tableView: searchTableView) { tableView, indexPath, item in
             guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchHistoryTableViewCell.identifier, for: indexPath) as? SearchHistoryTableViewCell else { return UITableViewCell() }
@@ -342,9 +355,11 @@ extension SearchViewController: UITableViewDelegate {
     }
     
     private func makeSearchResultTableViewDataSource() -> UITableViewDiffableDataSource<Int, Post> {
-        return UITableViewDiffableDataSource(tableView: searchTableView) { tableView, indexPath, item in
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: PostTableViewCell.identifier, for: indexPath) as? PostTableViewCell else { return UITableViewCell() }
+        return UITableViewDiffableDataSource(tableView: searchTableView) { [weak self] tableView, indexPath, item in
+            guard let storngSelf = self,
+                  let cell = tableView.dequeueReusableCell(withIdentifier: PostTableViewCell.identifier, for: indexPath) as? PostTableViewCell else { return UITableViewCell() }
             cell.configureCell(item: item)
+            cell.changeDuplicatedTextColor(searchText: storngSelf.viewModel.searchText)
             return cell
         }
     }

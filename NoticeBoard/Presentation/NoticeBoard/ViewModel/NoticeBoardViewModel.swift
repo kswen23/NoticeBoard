@@ -98,7 +98,7 @@ final class NoticeBoardViewModel: NoticeBoardViewModelProtocol {
     }
 
     func postListDidUpdated(with postList: [Post]) {
-        hasNextPage = postList.count == 30
+        hasNextPage = postList.count == currentOffset + 30
         isFetchable = true
     }
 }

@@ -22,8 +22,12 @@ protocol SearchViewModelProtocol {
     var searchHistoryRelay: BehaviorRelay<[SearchHistoryModel]> { get }
     var searchingRelay: BehaviorRelay<String?> { get }
     var searchResultRelay: BehaviorRelay<[Post]?> { get }
+    var searchText: String { get }
     
     func getSearchBarPlaceHolder() -> String
+    func fetchNextPostList()
+    func postListDidUpdated(with postList: [Post])
+    func resetPagingInstance()
     func searchBarDidChanged(text: String)
     func searchPostList(search: String, searchTarget: SearchTarget)
     func updateSearchHistory(search: String, searchTarget: SearchTarget)
@@ -37,6 +41,10 @@ final class SearchViewModel: SearchViewModelProtocol {
     let searchResultRelay: BehaviorRelay<[Post]?> = .init(value: nil)
     
     var currentSearchState: SearchState = .searchHistory
+    var searchText: String = ""
+    private var currentOffset = 0
+    private var hasNextPage: Bool?
+    private var isFetchable: Bool?
     
     // MARK: - Initialize
     private let board: Board
@@ -55,6 +63,36 @@ final class SearchViewModel: SearchViewModelProtocol {
         return "\(board.displayName)에서 검색"
     }
     
+    func fetchNextPostList() {
+        guard let hasNextPage = hasNextPage,
+              let isFetchable = isFetchable else { return }
+        
+        if isFetchable == true, hasNextPage == true {
+            
+            self.isFetchable = false
+            currentOffset += 30
+            
+            Task {
+                guard let postList = searchResultRelay.value else { return }
+                
+                let fetchedPostList = await noticeBoardAPIFetcher.fetchPostList(boardID: board.boardId, offset: currentOffset, limit: 30)
+                let post = postList + fetchedPostList
+                searchResultRelay.accept(post)
+            }
+        }
+    }
+    
+    func postListDidUpdated(with postList: [Post]) {
+        hasNextPage = postList.count == currentOffset + 30
+        isFetchable = true
+    }
+    
+    func resetPagingInstance() {
+        currentOffset = 0
+        isFetchable = nil
+        hasNextPage = nil
+    }
+    
     func searchBarDidChanged(text: String) {
         if text.count == 0 {
             currentSearchState = .searchHistory
@@ -68,6 +106,8 @@ final class SearchViewModel: SearchViewModelProtocol {
     func searchPostList(search: String, searchTarget: SearchTarget) {
         Task {
             currentSearchState = .searchResult
+            searchText = search
+            
             let searchResult = await noticeBoardAPIFetcher.fetchSearchPostList(search: search, searchTarget: searchTarget, boardID: board.boardId, offset: 0, limit: 30)
             searchResultRelay.accept(searchResult)
         }

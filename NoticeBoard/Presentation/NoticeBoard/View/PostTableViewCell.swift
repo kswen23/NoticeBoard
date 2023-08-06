@@ -307,4 +307,20 @@ final class PostTableViewCell: UITableViewCell {
             return dateFormatter.string(from: date)
         }
     }
+    
+    func changeDuplicatedTextColor(searchText: String) {
+        changeColorOfTextInLabel(searchText: searchText, targetLabel: titleLabel)
+    }
+    
+    private func changeColorOfTextInLabel(searchText: String, targetLabel: UILabel) {
+        let originalText = targetLabel.text ?? ""
+        
+        let attributedText = NSMutableAttributedString(string: originalText)
+        
+        let range = (originalText as NSString).range(of: searchText, options: .caseInsensitive)
+        attributedText.addAttribute(.foregroundColor, value: UIColor.systemRed, range: range)
+        
+        targetLabel.attributedText = attributedText
+    }
+
 }
