@@ -7,21 +7,21 @@
 
 import Foundation
 
-struct SearchHistory {
+struct SearchHistoryModel {
     
-    let searchRecord: SearchRecord
+    let searchRecord: SearchRecordModel
     let createdDateTime: Date
 }
 
-struct SearchRecord: Equatable {
+struct SearchRecordModel: Equatable {
     
     let searchTarget: SearchTarget
     let keyword: String
 }
 
-extension SearchHistory: Hashable, Equatable {
+extension SearchHistoryModel: Hashable, Equatable {
     
-    static func == (lhs: SearchHistory, rhs: SearchHistory) -> Bool {
+    static func == (lhs: SearchHistoryModel, rhs: SearchHistoryModel) -> Bool {
         return lhs.searchRecord == rhs.searchRecord && lhs.createdDateTime == rhs.createdDateTime
     }
     
