@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7CAC45FC2A7F51130066C688 /* NoticeBoard.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7CAC45FA2A7F51130066C688 /* NoticeBoard.xcdatamodeld */; };
+		7CAC46032A7F534F0066C688 /* SearchHistory+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CAC46012A7F534F0066C688 /* SearchHistory+CoreDataClass.swift */; };
+		7CAC46042A7F534F0066C688 /* SearchHistory+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CAC46022A7F534F0066C688 /* SearchHistory+CoreDataProperties.swift */; };
+		7CAC46082A7F54140066C688 /* CoreDataRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CAC46072A7F54140066C688 /* CoreDataRepository.swift */; };
 		7CAF6FE52A7BDD3600FA87B2 /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = 7CAF6FE42A7BDD3600FA87B2 /* Moya */; };
 		7CAF6FE72A7BDD3600FA87B2 /* RxMoya in Frameworks */ = {isa = PBXBuildFile; productRef = 7CAF6FE62A7BDD3600FA87B2 /* RxMoya */; };
 		7CAF6FEA2A7BE19100FA87B2 /* NoticeBoardAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CAF6FE92A7BE19100FA87B2 /* NoticeBoardAPI.swift */; };
@@ -31,11 +35,15 @@
 		7CE320172A7D2CB9005474D2 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CE320162A7D2CB9005474D2 /* SearchViewModel.swift */; };
 		7CEEA7342A7E442200CC3080 /* CustomSearchNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CEEA7332A7E442200CC3080 /* CustomSearchNavigationBar.swift */; };
 		7CEEA7382A7E7F3D00CC3080 /* SearchHistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CEEA7372A7E7F3D00CC3080 /* SearchHistoryTableViewCell.swift */; };
-		7CEEA73B2A7E8AAA00CC3080 /* SearchHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CEEA73A2A7E8AAA00CC3080 /* SearchHistory.swift */; };
+		7CEEA73B2A7E8AAA00CC3080 /* SearchHistoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CEEA73A2A7E8AAA00CC3080 /* SearchHistoryModel.swift */; };
 		7CEEA73D2A7EA92F00CC3080 /* SearchingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CEEA73C2A7EA92F00CC3080 /* SearchingTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7CAC45FB2A7F51130066C688 /* NoticeBoard.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = NoticeBoard.xcdatamodel; sourceTree = "<group>"; };
+		7CAC46012A7F534F0066C688 /* SearchHistory+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchHistory+CoreDataClass.swift"; sourceTree = "<group>"; };
+		7CAC46022A7F534F0066C688 /* SearchHistory+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchHistory+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		7CAC46072A7F54140066C688 /* CoreDataRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataRepository.swift; sourceTree = "<group>"; };
 		7CAF6FE92A7BE19100FA87B2 /* NoticeBoardAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoticeBoardAPI.swift; sourceTree = "<group>"; };
 		7CAF6FEB2A7BEB4200FA87B2 /* PostResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostResponse.swift; sourceTree = "<group>"; };
 		7CAF6FEE2A7BF34200FA87B2 /* BoardResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardResponse.swift; sourceTree = "<group>"; };
@@ -59,7 +67,7 @@
 		7CE320162A7D2CB9005474D2 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		7CEEA7332A7E442200CC3080 /* CustomSearchNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSearchNavigationBar.swift; sourceTree = "<group>"; };
 		7CEEA7372A7E7F3D00CC3080 /* SearchHistoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryTableViewCell.swift; sourceTree = "<group>"; };
-		7CEEA73A2A7E8AAA00CC3080 /* SearchHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistory.swift; sourceTree = "<group>"; };
+		7CEEA73A2A7E8AAA00CC3080 /* SearchHistoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryModel.swift; sourceTree = "<group>"; };
 		7CEEA73C2A7EA92F00CC3080 /* SearchingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchingTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -77,6 +85,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7CAC45F62A7F50920066C688 /* CoreDataClasses */ = {
+			isa = PBXGroup;
+			children = (
+				7CAC46012A7F534F0066C688 /* SearchHistory+CoreDataClass.swift */,
+				7CAC46022A7F534F0066C688 /* SearchHistory+CoreDataProperties.swift */,
+				7CAC45FA2A7F51130066C688 /* NoticeBoard.xcdatamodeld */,
+			);
+			path = CoreDataClasses;
+			sourceTree = "<group>";
+		};
+		7CAC46052A7F53BA0066C688 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				7CAC46062A7F53DF0066C688 /* LocalDB */,
+				7CAF6FE82A7BE16400FA87B2 /* Networking */,
+			);
+			path = Repository;
+			sourceTree = "<group>";
+		};
+		7CAC46062A7F53DF0066C688 /* LocalDB */ = {
+			isa = PBXGroup;
+			children = (
+				7CAC46072A7F54140066C688 /* CoreDataRepository.swift */,
+			);
+			path = LocalDB;
+			sourceTree = "<group>";
+		};
 		7CAF6FE82A7BE16400FA87B2 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
@@ -99,6 +134,7 @@
 		7CAF6FF22A7BFAD500FA87B2 /* Application */ = {
 			isa = PBXGroup;
 			children = (
+				7CAC45F62A7F50920066C688 /* CoreDataClasses */,
 				7CCFD6572A78FF190075D886 /* Main.storyboard */,
 				7CCFD65A2A78FF1B0075D886 /* Assets.xcassets */,
 				7CCFD65C2A78FF1B0075D886 /* LaunchScreen.storyboard */,
@@ -215,11 +251,11 @@
 		7CCFD6502A78FF190075D886 /* NoticeBoard */ = {
 			isa = PBXGroup;
 			children = (
-				7CEEA7392A7E8A9E00CC3080 /* Model */,
-				7CBB08F42A7C540800DF0231 /* Utility */,
 				7CAF6FF22A7BFAD500FA87B2 /* Application */,
 				7CAF6FF32A7BFBBF00FA87B2 /* Presentation */,
-				7CAF6FE82A7BE16400FA87B2 /* Networking */,
+				7CEEA7392A7E8A9E00CC3080 /* Model */,
+				7CAC46052A7F53BA0066C688 /* Repository */,
+				7CBB08F42A7C540800DF0231 /* Utility */,
 			);
 			path = NoticeBoard;
 			sourceTree = "<group>";
@@ -263,7 +299,7 @@
 		7CEEA7392A7E8A9E00CC3080 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				7CEEA73A2A7E8AAA00CC3080 /* SearchHistory.swift */,
+				7CEEA73A2A7E8AAA00CC3080 /* SearchHistoryModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -349,12 +385,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				7CE320152A7D2C9A005474D2 /* SearchViewController.swift in Sources */,
-				7CEEA73B2A7E8AAA00CC3080 /* SearchHistory.swift in Sources */,
+				7CEEA73B2A7E8AAA00CC3080 /* SearchHistoryModel.swift in Sources */,
 				7CBB09002A7C592F00DF0231 /* MenuSelectTableViewCell.swift in Sources */,
+				7CAC45FC2A7F51130066C688 /* NoticeBoard.xcdatamodeld in Sources */,
 				7CE320172A7D2CB9005474D2 /* SearchViewModel.swift in Sources */,
 				7CCFD6562A78FF190075D886 /* NoticeBoardViewController.swift in Sources */,
 				7CBB08FB2A7C570900DF0231 /* MenuSelectViewController.swift in Sources */,
 				7CAF6FF52A7BFFBC00FA87B2 /* DependencyInjector.swift in Sources */,
+				7CAC46042A7F534F0066C688 /* SearchHistory+CoreDataProperties.swift in Sources */,
 				7CCFD6522A78FF190075D886 /* AppDelegate.swift in Sources */,
 				7CAF6FFD2A7C031000FA87B2 /* NoticeBoardViewModel.swift in Sources */,
 				7CCFD6542A78FF190075D886 /* SceneDelegate.swift in Sources */,
@@ -365,8 +403,10 @@
 				7CEEA73D2A7EA92F00CC3080 /* SearchingTableViewCell.swift in Sources */,
 				7CBB08F32A7C497C00DF0231 /* PostTableViewCell.swift in Sources */,
 				7CAF70082A7C15D000FA87B2 /* NoticeBoardAPIFetcher.swift in Sources */,
+				7CAC46032A7F534F0066C688 /* SearchHistory+CoreDataClass.swift in Sources */,
 				7CAF6FEF2A7BF34200FA87B2 /* BoardResponse.swift in Sources */,
 				7CEEA7382A7E7F3D00CC3080 /* SearchHistoryTableViewCell.swift in Sources */,
+				7CAC46082A7F54140066C688 /* CoreDataRepository.swift in Sources */,
 				7CEEA7342A7E442200CC3080 /* CustomSearchNavigationBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -624,6 +664,19 @@
 			productName = RxCocoa;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		7CAC45FA2A7F51130066C688 /* NoticeBoard.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				7CAC45FB2A7F51130066C688 /* NoticeBoard.xcdatamodel */,
+			);
+			currentVersion = 7CAC45FB2A7F51130066C688 /* NoticeBoard.xcdatamodel */;
+			path = NoticeBoard.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 7CCFD6462A78FF190075D886 /* Project object */;
 }

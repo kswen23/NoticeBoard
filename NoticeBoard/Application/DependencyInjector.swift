@@ -13,6 +13,7 @@ final class DependencyInjector {
     static let shared: DependencyInjector = DependencyInjector()
     
     private lazy var noticeBoardAPIFetcher: NoticeBoardAPIFetcherProtocol = NoticeBoardAPIFetcher()
+    private lazy var coreDataRepository: CoreDataRepositoryProtocol = CoreDataRepository()
     
     func makeNoticeBoardViewController() -> UIViewController {
         let viewModel: NoticeBoardViewModelProtocol = NoticeBoardViewModel(noticeBoardAPIFetcher: noticeBoardAPIFetcher)
@@ -29,7 +30,7 @@ final class DependencyInjector {
     }
     
     func makeSearchViewController(board: Board) -> SearchViewController {
-        let viewModel: SearchViewModelProtocol = SearchViewModel(board: board,  noticeBoardAPIFetcher: noticeBoardAPIFetcher)
+        let viewModel: SearchViewModelProtocol = SearchViewModel(board: board, noticeBoardAPIFetcher: noticeBoardAPIFetcher, coreDataRepository: coreDataRepository)
         
         return SearchViewController(viewModel: viewModel)
     }
