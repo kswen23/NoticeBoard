@@ -88,7 +88,7 @@ final class NoticeBoardViewModel: NoticeBoardViewModelProtocol {
             Task {
                 guard let board = boardRelay.value,
                       let postList = postRelay.value else { return }
-
+                
                 let fetchedPostList = await noticeBoardAPIFetcher.fetchPostList(boardID: board.boardId, offset: currentOffset, limit: 30)
                 let post = postList + fetchedPostList
                 postRelay.accept(post)
@@ -96,7 +96,7 @@ final class NoticeBoardViewModel: NoticeBoardViewModelProtocol {
         }
         
     }
-
+    
     func postListDidUpdated(with postList: [Post]) {
         hasNextPage = postList.count == currentOffset + 30
         isFetchable = true
