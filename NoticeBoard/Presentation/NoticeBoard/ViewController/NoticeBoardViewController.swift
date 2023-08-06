@@ -27,10 +27,10 @@ class NoticeBoardViewController: UIViewController {
         presentMenuSelectViewController()
     }
     
-    private lazy var searchBarButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .done, target: self, action: #selector(menuBarButtonDidTapped))
+    private lazy var searchBarButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .done, target: self, action: #selector(searchBarButtonDidTapped))
     
     @objc private func searchBarButtonDidTapped() {
-        print("b")
+        pushSearchViewController()
     }
     
     private let postTableView: UITableView = UITableView()
@@ -79,6 +79,11 @@ class NoticeBoardViewController: UIViewController {
         configure()
         binding()
         viewModel.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
     // MARK: - Layout
@@ -189,6 +194,13 @@ class NoticeBoardViewController: UIViewController {
         
         let menuSelectViewController = DependencyInjector.shared.makeMenuSelectViewController(boardList: boardList, parentableViewController: self)
         present(UINavigationController(rootViewController: menuSelectViewController), animated: true)
+    }
+    
+    private func pushSearchViewController() {
+        guard let board = viewModel.boardRelay.value else { return }
+        
+        let searchViewController = DependencyInjector.shared.makeSearchViewController(board: board)
+        navigationController?.pushViewController(searchViewController, animated: true)
     }
 }
 

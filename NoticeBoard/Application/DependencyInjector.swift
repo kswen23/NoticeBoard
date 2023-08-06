@@ -27,4 +27,10 @@ final class DependencyInjector {
         viewController.parentableViewController = parentableViewController
         return viewController
     }
+    
+    func makeSearchViewController(board: Board) -> SearchViewController {
+        let viewModel: SearchViewModelProtocol = SearchViewModel(board: board,  noticeBoardAPIFetcher: noticeBoardAPIFetcher)
+        
+        return SearchViewController(viewModel: viewModel)
+    }
 }
