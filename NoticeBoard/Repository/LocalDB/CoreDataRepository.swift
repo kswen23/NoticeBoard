@@ -9,10 +9,6 @@ import CoreData
 import Foundation
 import UIKit
 
-enum CoreDataName: String {
-    case searchHistory = "SearchHistory"
-}
-
 protocol CoreDataRepositoryProtocol {
     
     func saveSearchHistory(searchHistoryModel: SearchHistoryModel)
