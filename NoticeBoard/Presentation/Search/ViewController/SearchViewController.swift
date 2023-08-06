@@ -19,7 +19,7 @@ final class SearchViewController: UIViewController {
     
     
     private var searchingDataSource: UITableViewDiffableDataSource<Int, SearchTarget>?
-    private var searchTableViewDataSource: UITableViewDiffableDataSource<Int, SearchHistory>?
+    private var searchTableViewDataSource: UITableViewDiffableDataSource<Int, SearchHistoryModel>?
     private var searchResultTableViewDataSource: UITableViewDiffableDataSource<Int, Post>?
     
     private let emptyResultImageView: UIImageView = {
@@ -60,7 +60,7 @@ final class SearchViewController: UIViewController {
             view.heightAnchor.constraint(equalToConstant: 171),
             imageView.heightAnchor.constraint(equalToConstant: 171),
             imageView.widthAnchor.constraint(equalToConstant: 151),
-            imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
         return view
     }()
@@ -217,7 +217,7 @@ final class SearchViewController: UIViewController {
                 
                 strongSelf.searchTableViewDataSource = self?.makeSearchHistoryTableViewDataSource()
                 
-                var snapshot = NSDiffableDataSourceSnapshot<Int, SearchHistory>()
+                var snapshot = NSDiffableDataSourceSnapshot<Int, SearchHistoryModel>()
                 snapshot.appendSections([0])
                 snapshot.appendItems(searchHistory, toSection: 0)
                 strongSelf.searchTableViewDataSource?.apply(snapshot, animatingDifferences: false)
@@ -303,7 +303,6 @@ extension SearchViewController: UITableViewDelegate {
         }
         
         startSearching(text: search, state: .result, searchTarget: searchTarget)
-        // 쿼리 업데이트
     }
     
     private func startSearching(text: String, state: SearchBarState, searchTarget: SearchTarget) {
@@ -311,6 +310,7 @@ extension SearchViewController: UITableViewDelegate {
         searchNavigationBar.resignTextField()
         searchNavigationBar.changeSearchBarState(text: text, state: state, searchTarget: searchTarget)
         viewModel.searchPostList(search: text, searchTarget: searchTarget)
+        viewModel.updateSearchHistory(search: text, searchTarget: searchTarget)
     }
     
     private func getSearchingTarget(row: Int) -> SearchTarget {
@@ -323,10 +323,11 @@ extension SearchViewController: UITableViewDelegate {
         }
     }
     
-    private func makeSearchHistoryTableViewDataSource() -> UITableViewDiffableDataSource<Int, SearchHistory> {
+    private func makeSearchHistoryTableViewDataSource() -> UITableViewDiffableDataSource<Int, SearchHistoryModel> {
         return UITableViewDiffableDataSource(tableView: searchTableView) { tableView, indexPath, item in
             guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchHistoryTableViewCell.identifier, for: indexPath) as? SearchHistoryTableViewCell else { return UITableViewCell() }
             cell.configureCell(item: item)
+            cell.delegate = self
             return cell
         }
     }
@@ -369,7 +370,7 @@ extension SearchViewController: CustomSearchBarDelegate {
     }
 }
 
-extension SearchViewController: SearchingTableViewCellDelegate {
+extension SearchViewController: SearchingTableViewCellDelegate, SearchHistoryTableViewCellDelegate {
     
     func searchButtonDidTapped(cell: SearchingTableViewCell) {
         
@@ -381,4 +382,10 @@ extension SearchViewController: SearchingTableViewCellDelegate {
                        searchTarget: SearchTarget.allCases[index])
     }
     
+    func deleteButtonDidTapped(cell: SearchHistoryTableViewCell) {
+        guard let index = searchTableView.indexPath(for: cell)?.row else { return }
+        let searchHistoryModel = viewModel.searchHistoryRelay.value[index]
+        
+        viewModel.deleteSearchHistoryQuery(searchHistoryModel)
+    }
 }

@@ -8,9 +8,16 @@
 import Foundation
 import UIKit
 
+protocol SearchHistoryTableViewCellDelegate: NSObject {
+    func deleteButtonDidTapped(cell: SearchHistoryTableViewCell)
+    
+}
+
 final class SearchHistoryTableViewCell: UITableViewCell {
     
     static let identifier = "SearchHistoryTableViewCell"
+    
+    weak var delegate: SearchHistoryTableViewCellDelegate?
     
     private let clockImageView: UIImageView = {
         let imageView = UIImageView()
@@ -44,7 +51,7 @@ final class SearchHistoryTableViewCell: UITableViewCell {
     }()
     
     @objc private func deleteButtonDidClicked() {
-        print("delete")
+        delegate?.deleteButtonDidTapped(cell: self)
     }
     
     // MARK: - Initialize
@@ -106,7 +113,7 @@ final class SearchHistoryTableViewCell: UITableViewCell {
     }
     
     // MARK: - configure
-    func configureCell(item: SearchHistory) {
+    func configureCell(item: SearchHistoryModel) {
         searchTargetLabel.text = item.searchRecord.searchTarget.title
         searchTargetLabel.sizeToFit()
         keywordLabel.text = item.searchRecord.keyword

@@ -19,19 +19,20 @@ enum SearchState {
 protocol SearchViewModelProtocol {
     
     var currentSearchState: SearchState { get }
-    var searchHistoryRelay: BehaviorRelay<[SearchHistory]> { get }
+    var searchHistoryRelay: BehaviorRelay<[SearchHistoryModel]> { get }
     var searchingRelay: BehaviorRelay<String?> { get }
     var searchResultRelay: BehaviorRelay<[Post]?> { get }
     
     func getSearchBarPlaceHolder() -> String
     func searchBarDidChanged(text: String)
     func searchPostList(search: String, searchTarget: SearchTarget)
+    func updateSearchHistory(search: String, searchTarget: SearchTarget)
+    func deleteSearchHistoryQuery(_ model: SearchHistoryModel)
 }
 
 final class SearchViewModel: SearchViewModelProtocol {
     
-//    let searchHistoryRelay: BehaviorRelay<[SearchHistory]> = .init(value: [.init(searchRecord: .init(searchTarget: .all, keyword: "abc"), createdDateTime: .init()), .init(searchRecord: .init(searchTarget: .contents, keyword: "diji"), createdDateTime: .init())])
-    let searchHistoryRelay: BehaviorRelay<[SearchHistory]> = .init(value: [])
+    lazy var searchHistoryRelay: BehaviorRelay<[SearchHistoryModel]> = .init(value: coreDataRepository.fetchSearchHistory())
     let searchingRelay: BehaviorRelay<String?> = .init(value: nil)
     let searchResultRelay: BehaviorRelay<[Post]?> = .init(value: nil)
     
@@ -40,11 +41,14 @@ final class SearchViewModel: SearchViewModelProtocol {
     // MARK: - Initialize
     private let board: Board
     private let noticeBoardAPIFetcher: NoticeBoardAPIFetcherProtocol
+    private let coreDataRepository: CoreDataRepositoryProtocol
     
     init(board: Board,
-         noticeBoardAPIFetcher: NoticeBoardAPIFetcherProtocol) {
+         noticeBoardAPIFetcher: NoticeBoardAPIFetcherProtocol,
+         coreDataRepository: CoreDataRepositoryProtocol) {
         self.board = board
         self.noticeBoardAPIFetcher = noticeBoardAPIFetcher
+        self.coreDataRepository = coreDataRepository
     }
     
     func getSearchBarPlaceHolder() -> String {
@@ -54,7 +58,7 @@ final class SearchViewModel: SearchViewModelProtocol {
     func searchBarDidChanged(text: String) {
         if text.count == 0 {
             currentSearchState = .searchHistory
-            searchHistoryRelay.accept(searchHistoryRelay.value)
+            searchHistoryRelay.accept(coreDataRepository.fetchSearchHistory())
         } else {
             currentSearchState = .searching
             searchingRelay.accept(text)
@@ -67,5 +71,15 @@ final class SearchViewModel: SearchViewModelProtocol {
             let searchResult = await noticeBoardAPIFetcher.fetchSearchPostList(search: search, searchTarget: searchTarget, boardID: board.boardId, offset: 0, limit: 30)
             searchResultRelay.accept(searchResult)
         }
+    }
+    
+    func updateSearchHistory(search: String, searchTarget: SearchTarget) {
+        coreDataRepository.saveSearchHistory(searchHistoryModel: .init(searchRecord: .init(searchTarget: searchTarget, keyword: search), createdDateTime: .init()))
+    }
+    
+    func deleteSearchHistoryQuery(_ model: SearchHistoryModel) {
+        coreDataRepository.deleteSearchHistory(searchHistoryModel: model)
+        
+        searchHistoryRelay.accept(coreDataRepository.fetchSearchHistory())
     }
 }
